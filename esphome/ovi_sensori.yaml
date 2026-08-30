@@ -149,7 +149,7 @@ display:
       } else if (id(fish_state) == 2 && millis() - id(cast_start) > 1200) {
         // heitto päättyy -> uusi kala random 10-60s päästä
         id(fish_state) = 0;
-        id(next_fish) = millis() + random(10000, 60000);
+        id(next_fish) = millis() + random_get_int(10000, 60000);
       }
 
       // Siima heiluu pienesti
