@@ -71,10 +71,10 @@ display:
       it.filled_rectangle(80, 12, 47, 8);
 
       // Sadepisarat putoavat pilvestä
-      for (int i = 0; i < 14; i++) {
+      for (int i = 0; i < 22; i++) {
         int x = 84 + (i * 29) % 38;
-        int speed = 25 + (i * 11) % 20;              // eri putoamisnopeudet
-        long pos = (millis() / speed + i * 19) % 46;
+        int speed = 10 + (i * 7) % 12;               // eri putoamisnopeudet (nopea)
+        long pos = (millis() / speed + i * 19) % 48;
         int y = 20 + (int)pos;
         int len = (i % 3) + 1;                        // pisaran pituus 1-3px
         it.line(x, y, x, y + len);
