@@ -21,8 +21,6 @@ logger:
 
 api:
 
-homeassistant:
-
 ota:
   platform: esphome
   port: 3232
