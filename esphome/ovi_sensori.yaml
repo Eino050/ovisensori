@@ -76,11 +76,11 @@ display:
       it.line(line_bottom_x, line_bottom_y, line_bottom_x, line_bottom_y + 2);
 
 font:
-  - file: "gfonts://DejaVu Sans"
+  - file: "gfonts://Montserrat"
     id: font_large
     size: 20
 
-  - file: "gfonts://DejaVu Sans"
+  - file: "gfonts://Montserrat"
     id: font_small
     size: 14
 
