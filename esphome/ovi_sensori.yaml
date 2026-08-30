@@ -71,12 +71,12 @@ display:
       it.filled_rectangle(80, 12, 47, 8);
 
       // Sadepisarat putoavat pilvestä
-      for (int i = 0; i < 22; i++) {
-        int x = 84 + (i * 29) % 38;
-        int speed = 10 + (i * 7) % 12;               // eri putoamisnopeudet (nopea)
-        long pos = (millis() / speed + i * 19) % 48;
+      for (int i = 0; i < 30; i++) {
+        int x = 82 + (i * 23) % 42;
+        int speed = 6 + (i * 5) % 9;                 // nopea putoaminen
+        long pos = (millis() / speed + i * 23) % 48;
         int y = 20 + (int)pos;
-        int len = (i % 3) + 1;                        // pisaran pituus 1-3px
+        int len = (i % 4) + 1;                        // pisaran pituus 1-4px
         it.line(x, y, x, y + len);
       }
 
