@@ -11,20 +11,6 @@ esp32:
   framework:
     type: esp-idf
 
-globals:
-  - id: last_min
-    type: int
-    restore_value: no
-    initial_value: '-1'
-  - id: anim_start
-    type: long
-    restore_value: no
-    initial_value: '0'
-  - id: prev_min_str
-    type: std::string
-    restore_value: no
-    initial_value: '""'
-
 wifi:
   ssid: !secret wifi_ssid
   password: !secret wifi_password
@@ -58,86 +44,31 @@ display:
     update_interval: 1s
     lambda: |-
       auto now = id(sntp_time).now();
-      int cur_min = now.hour * 60 + now.minute;
 
-      // Hahmo hypähtää ja numerot vaihtuvat kun minuutti vaihtuu
-      if (id(last_min) != -1 && id(last_min) != cur_min) {
-        id(anim_start) = millis();
-        id(prev_min_str) = str_sprintf("%02d", id(last_min) % 60);
-      }
-      id(last_min) = cur_min;
+      // Kello isolla sekuntitarkkuudella
+      it.strftime(0, 4, id(font_large), "%H:%M:%S", now);
 
-      // Kellonaika teksti (tunnit + kaksoispiste)
-      std::string hour_str = str_sprintf("%02d:", now.hour);
-      std::string min_str = str_sprintf("%02d", now.minute);
-
-      // Animointi: 0..1000 ms
-      int a = millis() - id(anim_start);
-      float t = a / 1000.0f;
-      float p = clamp(t, 0.0f, 1.0f);
-
-      // Hahmon sijainti: hyppy parabolana kellonajan yli
-      int char_x = 0;
-      int char_y = 0;
-      if (t >= 0 && t < 1.0f) {
-        char_x = (int)(p * 44);
-        char_y = (int)(24 - 60.0f * p * (1.0f - p));
-      }
-
-      // Piirrä tunnit (pysyy) + kaksoispiste
-      it.printf(0, 0, id(font_large), "%s", hour_str.c_str());
-
-      // Minuutti: animaatio liikuttaa vanhan pois ja uuden sisään
-      if (t >= 0.0f && t < 0.5f) {
-        // vanha minuutti liukuu vasemmalle pois
-        int off = (int)(40.0f * (p * 2.0f));
-        it.printf(60 - off, 0, id(font_large), "%s", id(prev_min_str).c_str());
-      } else if (t >= 0.5f && t < 1.0f) {
-        // uusi minuutti liukuu oikealta sisään
-        int off = (int)(40.0f * (1.0f - (p - 0.5f) * 2.0f));
-        it.printf(60 + off, 0, id(font_large), "%s", min_str.c_str());
+      // Alarivi: päivämäärä lyhyessä muodossa
+      if ((millis() / 5000) % 2 == 0) {
+        it.strftime(0, 46, id(font_small), "%y/%m/%d", now);
       } else {
-        // ei animaatiota: minuutti paikallaan
-        it.printf(60, 0, id(font_large), "%s", min_str.c_str());
+        it.strftime(0, 46, id(font_small), "%H:%M:%S", now);
       }
 
-      // Hahmo: pallopää + jalat (näkyy vain animaation aikana)
-      if (t >= 0.0f && t < 1.0f) {
-        int hx = char_x + 10;
-        int hy = char_y + 2;
-        it.filled_circle(hx, hy, 6);              // pää
-        it.filled_rectangle(hx - 2, hy + 6, 4, 8); // vartalo
-        it.filled_rectangle(hx - 5, hy + 14, 3, 4); // vasen jalka
-        it.filled_rectangle(hx + 2, hy + 14, 3, 4); // oikea jalka
-        // silmät
-        it.filled_circle(hx - 2, hy - 1, 1);
-        it.filled_circle(hx + 2, hy - 1, 1);
-      }
-
-      // Alarivi: päivämäärä lyhyessä muodossa ja viiva alla
-      int px = (millis() / 5000) % 2;
-      if (px == 0) {
-        it.strftime(0, 46, id(font_small), "%y/%m/%d", id(sntp_time).now());
-      } else {
-        it.strftime(0, 46, id(font_small), "%H:%M:%S", id(sntp_time).now());
-      }
-      it.filled_rectangle(0, 56, 128, 8);
-
-      // Kalastava hahmo joka nojaa näytön oikeaan reunaan
-      // vartalo (nojaa oikealle)
-      it.filled_circle(116, 30, 5);              // pää
-      it.filled_rectangle(112, 35, 3, 10);        // vartalo
-      it.line(115, 35, 100, 20);                 // käsi ylhäälle (vapa)
-      it.line(100, 20, 104, 20);                 // vavan kärki
-      it.line(97, 22, 60, 40);                   // siima kohti päivämäärää
-      // jalat nojaamassa reunaan
-      it.line(113, 45, 108, 52);
-      it.line(116, 45, 121, 52);
+      // Kalastava hahmo joka istuu näytön oikeassa reunassa
+      it.filled_circle(116, 34, 5);               // pää
+      it.filled_rectangle(112, 39, 3, 8);         // vartalo
+      it.filled_rectangle(109, 47, 8, 2);         // istuin (reidet)
+      it.line(115, 47, 110, 52);                  // vasen sääri (riippuu)
+      it.line(118, 47, 124, 52);                  // oikea sääri
+      it.line(114, 39, 100, 24);                  // käsi ylhäälle (vapa)
+      it.line(100, 24, 104, 24);                  // vavan kärki
+      it.line(97, 26, 60, 44);                    // siima kohti päivämäärää
 
 font:
   - file: "gfonts://Roboto"
     id: font_large
-    size: 28
+    size: 22
 
   - file: "gfonts://Roboto"
     id: font_small
