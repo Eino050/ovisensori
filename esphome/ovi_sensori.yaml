@@ -11,6 +11,16 @@ esp32:
   framework:
     type: esp-idf
 
+globals:
+  - id: prev_min
+    type: int
+    restore_value: no
+    initial_value: '-1'
+  - id: anim_start
+    type: long
+    restore_value: no
+    initial_value: '0'
+
 wifi:
   ssid: !secret wifi_ssid
   password: !secret wifi_password
@@ -45,8 +55,35 @@ display:
     lambda: |-
       auto now = id(sntp_time).now();
 
-      // Kello isolla sekuntitarkkuudella
-      it.strftime(0, 4, id(font_large), "%H:%M:%S", now);
+      // Minuutin vaihto käynnistää hypyn
+      int cur_min = now.hour * 60 + now.minute;
+      if (id(prev_min) != -1 && id(prev_min) != cur_min) {
+        id(anim_start) = millis();
+      }
+      id(prev_min) = cur_min;
+
+      // Kellonaika osat
+      std::string hm = str_sprintf("%02d:%02d", now.hour, now.minute);
+      std::string ss = str_sprintf("%02d", now.second);
+
+      // Piirrä tunnit + minuutit isolla
+      it.printf(0, 6, id(font_large), "%s", hm.c_str());
+      int min_x = it.get_text_width(id(font_large), hm.c_str());
+      it.printf(min_x, 6, id(font_large), "%s", ss.c_str());
+
+      // Animaatio: hahmo hyppää minuuttinumeron kohdalle (~1s)
+      float t = (millis() - id(anim_start)) / 1000.0f;
+      if (t >= 0.0f && t < 1.0f) {
+        float p = clamp(t, 0.0f, 1.0f);
+        int hx = min_x - 6;
+        int hy = (int)(24 - 50.0f * p * (1.0f - p));
+        it.filled_circle(hx, hy, 6);                // pää
+        it.filled_rectangle(hx - 2, hy + 6, 4, 8);  // vartalo
+        it.filled_rectangle(hx - 5, hy + 14, 3, 4); // vasen jalka
+        it.filled_rectangle(hx + 2, hy + 14, 3, 4); // oikea jalka
+        it.filled_circle(hx - 2, hy - 1, 1);        // silmä
+        it.filled_circle(hx + 2, hy - 1, 1);        // silmä
+      }
 
       // Alarivi: päivämäärä lyhyessä muodossa
       if ((millis() / 5000) % 2 == 0) {
