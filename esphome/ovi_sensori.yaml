@@ -40,6 +40,7 @@ logger:
 api:
 
 ota:
+  platform: esp32
   port: 3232
   password: !secret ota_password
 
