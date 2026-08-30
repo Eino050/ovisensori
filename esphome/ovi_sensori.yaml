@@ -53,21 +53,27 @@ display:
       it.strftime(0, 46, id(font_small), "%y/%m/%d", now);
 
       // Kalastava hahmo joka istuu näytön oikeassa reunassa
-      it.filled_circle(116, 34, 5);               // pää
-      it.filled_rectangle(109, 27, 14, 2);        // hatun lieri
-      it.filled_circle(116, 27, 5);               // hatun kupu
-      it.filled_rectangle(112, 39, 3, 8);         // vartalo
-      it.filled_rectangle(109, 47, 8, 2);         // istuin (reidet)
-      it.line(115, 47, 110, 52);                  // vasen sääri (riippuu)
-      it.line(118, 47, 124, 52);                  // oikea sääri
-      it.line(114, 39, 100, 24);                  // käsi ylhäälle (vapa)
-      it.line(100, 24, 104, 24);                  // vavan kärki
+      // Dreamworks-tyylinen kalastajahahmo (profiili katsellen vasemmalle)
+      it.filled_circle(115, 32, 7);               // iso pää
+      it.filled_triangle(109, 29, 99, 35, 109, 38);  // terävä nenäprofiili eteen
+      it.filled_triangle(106, 37, 98, 48, 113, 44);  // iso alaleuka/leuka
+      it.filled_rectangle(113, 44, 15, 9);        // vartalo/kroppa
+      it.filled_rectangle(110, 44, 5, 9);         // vartalon etuosa
+      it.filled_rectangle(108, 53, 9, 2);         // istuin (reidet)
+      it.line(114, 53, 108, 58);                  // vasen sääri (roikkuu)
+      it.line(117, 53, 123, 58);                  // oikea sääri
+      it.filled_rectangle(120, 42, 4, 7);         // selkä
+      it.line(115, 27, 124, 27);                  // hatun lieri
+      it.filled_rectangle(112, 23, 7, 5);         // hatun kupu
+      it.filled_circle(112, 31, 1);               // silmä
+      it.line(110, 45, 100, 26);                  // käsi ylhäälle (vapa)
+      it.line(100, 26, 104, 26);                  // vavan kärki
 
       // Siima suorana eteenpäin (vasemmalle) alalaitaan, pieni veto ylös-alas
       float bob = sin(millis() / 300.0f) * 2.0f;
       int line_bottom_x = 92;
       int line_bottom_y = 60 + (int)(bob * 0.5f);
-      it.line(100, 24, line_bottom_x, line_bottom_y);
+      it.line(104, 26, line_bottom_x, line_bottom_y);
       it.line(line_bottom_x, line_bottom_y, line_bottom_x, line_bottom_y + 2);
 
 font:
