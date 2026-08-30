@@ -110,6 +110,8 @@ display:
 
       // Kalastava hahmo joka istuu näytön oikeassa reunassa
       it.filled_circle(116, 34, 5);               // pää
+      it.filled_rectangle(109, 27, 14, 2);        // hatun lieri
+      it.filled_circle(116, 27, 5);               // hatun kupu
       it.filled_rectangle(112, 39, 3, 8);         // vartalo
       it.filled_rectangle(109, 47, 8, 2);         // istuin (reidet)
       it.line(115, 47, 110, 52);                  // vasen sääri (riippuu)
