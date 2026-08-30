@@ -74,7 +74,7 @@ display:
 
       // Piirrä tunnit + minuutit isolla
       it.printf(0, 6, id(font_large), "%s", hm.c_str());
-      int min_x = it.get_text_width(id(font_large), hm.c_str());
+      int min_x = it.get_string_width(id(font_large), hm.c_str());
       it.printf(min_x, 6, id(font_large), "%s", ss.c_str());
 
       // Määritä hahmon kohde vaihtuvan numeron mukaan
