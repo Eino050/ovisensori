@@ -52,28 +52,35 @@ display:
       // Alarivi: päivämäärä lyhyessä muodossa (vain päivämäärä)
       it.strftime(0, 46, id(font_small), "%y/%m/%d", now);
 
-      // Dreamworks-tyylinen kalastaja (profiili katsellen vasemmalle)
-      // piirretään taaksepäin: vartalo -> pää -> kasvonpiirteet -> varusteet
-      it.filled_rectangle(106, 42, 16, 10);       // torso
-      it.filled_circle(112, 30, 8);               // iso pää
-      it.filled_rectangle(110, 38, 5, 5);         // kaula (liittää pään ja torson)
-      it.filled_triangle(102, 35, 94, 41, 104, 43);   // nenäprofiili eteen
-      it.filled_triangle(105, 38, 99, 47, 112, 44);   // iso Dreamworks-leuka
-      it.filled_circle(106, 29, 1);               // silmä
-      it.filled_rectangle(105, 52, 10, 3);        // istuin/reidet
-      it.line(106, 55, 100, 60);                  // vasen sääri roikkuu
-      it.line(111, 55, 116, 60);                  // oikea sääri
-      it.line(108, 42, 99, 25);                   // käsi ylhäälle vavan kanssa
-      it.line(99, 25, 104, 25);                   // vavan kärki
-      it.line(113, 22, 126, 22);                  // hatun lieri
-      it.filled_rectangle(114, 17, 6, 6);         // hatun kupu
+      // Kalastaja: istuu taaksepäin nojaten, profiili vasemmalle (ei kasvonpiirteitä)
+      it.filled_circle(117, 31, 6);               // pieni pyöreä pää
+      it.filled_rectangle(119, 24, 8, 4);         // hiustyyli (kallistuu)
+      it.filled_circle(122, 27, 3);               // hiustupsu
+      it.filled_triangle(118, 35, 106, 46, 124, 44);   // torso nojaa taaksepäin
+      it.filled_rectangle(122, 40, 6, 8);         // selkä/takavartalo
+      it.line(108, 40, 103, 30);                  // käsi ojennettu ylös-eteen (pitää siimaa)
+      it.line(112, 40, 104, 44);                  // toinen käsi vartalon edessä
+      it.line(106, 46, 96, 40);                   // koukussa oleva jalka (polvi ylös)
+      it.line(96, 40, 88, 46);                    // koukun sääri
+      it.line(118, 46, 124, 46);                  // suora jalka eteenpäin
+      it.line(124, 46, 124, 52);                  // suoran jalan alku
+      it.filled_rectangle(86, 45, 6, 3);          // jalkaterä (koukkujalka)
+      it.filled_rectangle(120, 51, 9, 3);         // jalkaterä (suora jalka)
 
-      // Siima suorana eteenpäin (vasemmalle) alalaitaan, pieni veto ylös-alas
-      float bob = sin(millis() / 300.0f) * 2.0f;
-      int line_bottom_x = 92;
-      int line_bottom_y = 60 + (int)(bob * 0.5f);
-      it.line(104, 25, line_bottom_x, line_bottom_y);
-      it.line(line_bottom_x, line_bottom_y, line_bottom_x, line_bottom_y + 2);
+      // Siima: suuri kaari oikealle hahmon ympärille (ei mene kellon/päivän päälle)
+      const int hand_x = 103, hand_y = 30;
+      it.line(hand_x, hand_y, 110, 21);
+      it.line(110, 21, 119, 13);
+      it.line(119, 13, 126, 7);
+      it.line(126, 7, 121, 17);
+      it.line(121, 17, 116, 29);
+      it.line(116, 29, 112, 41);
+      it.line(112, 41, 109, 50);
+      it.line(109, 50, 107, 56);                   // siima maahan
+      it.filled_circle(107, 57, 2);                // kiinnityspiste maassa
+      it.line(102, 54, 98, 57);                    // värähtelyviivat maassa
+      it.line(95, 60, 91, 62);
+      it.line(112, 61, 109, 63);
 
 font:
   - file: "gfonts://Montserrat"
