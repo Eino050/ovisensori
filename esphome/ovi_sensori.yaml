@@ -52,27 +52,21 @@ display:
       // Alarivi: päivämäärä lyhyessä muodossa (vain päivämäärä)
       it.strftime(0, 46, id(font_small), "%y/%m/%d", now);
 
-      // Tornado animaatio (vaakasuuntainen heilahdus ja pyörteily)
-      float tw = sin(millis() / 180.0f);
-      int cx = 102 + (int)(tw * 6.0f);
-
-      // Suppilon leveä suu / pilvi (ylhäällä)
-      it.filled_rectangle(cx - 14, 8, 28, 4);
-      it.filled_rectangle(cx - 11, 12, 22, 3);
-
-      // Suppilo: pinottuja katkonaisia vaakaviivoja jotka kapenevat vyötäröön
-      for (int i = 0; i < 9; i++) {
-        int y = 15 + i * 3;
-        int w = 10 - i;
-        int sway = (int)(tw * (2 + i * 0.8f));
-        it.line(cx - w + sway, y, cx + w + sway, y + 2);
+      // Matrix-sade: erikokoisia merkkejä putoilee oikealle alueelle
+      const char matrix_chars[] = "01AЮЖ$#*+?<>W@";
+      for (int i = 0; i < 5; i++) {
+        int x = 84 + i * 9;
+        int speed = 60 + (i * 23) % 70;         // eri putoamisnopeudet
+        long pos = (millis() / speed + (i * 37)) % 34;
+        int y = 4 + (int)pos;
+        int size = i % 3;                        // 0=pieni, 1=keski, 2=iso
+        char c = matrix_chars[((millis() / 130 + i * 7) % 13)];
+        switch (size) {
+          case 0: it.printf(x, y, id(font_tiny), "%c", c); break;
+          case 1: it.printf(x, y, id(font_small), "%c", c); break;
+          case 2: it.printf(x, y, id(font_large), "%c", c); break;
+        }
       }
-
-      // Tornadon alareuna pölyä (leveäntyvä, nostaa maassa)
-      it.filled_rectangle(cx - 9, 44, 18, 3);
-      it.filled_rectangle(cx - 11, 47, 22, 3);
-      it.filled_rectangle(cx - 13, 50, 26, 3);
-      it.filled_rectangle(cx - 13, 53, 26, 2);
 
 font:
   - file: "gfonts://Montserrat"
@@ -82,6 +76,10 @@ font:
   - file: "gfonts://Montserrat"
     id: font_small
     size: 14
+
+  - file: "gfonts://Montserrat"
+    id: font_tiny
+    size: 10
 
 i2c:
   sda: GPIO21
