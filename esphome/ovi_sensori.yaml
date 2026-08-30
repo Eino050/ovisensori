@@ -41,17 +41,17 @@ display:
       // Näytä kellonaika
       it.strftime(0, 0, id(font_large), "%H:%M:%S", id(sntp_time).now());
 
-      // Alin rivi: vaihtuu 5s välein päivämäärän ja liiketilan välillä
-      if ((millis() / 5000) % 2 == 0) {
+      // Alin rivi: liikeherkkyys ensisijainen, muuten vaihtuu 5s välein
+      if (id(motion_sensor).state) {
+        // Liike päällä => näytä heti ilmoitus
+        it.printf(0, 36, id(font_small), "LIIKE!!");
+        it.filled_rectangle(0, 56, 128, 8);
+      } else if ((millis() / 5000) % 2 == 0) {
         // Päivämäärä
         it.strftime(0, 36, id(font_small), "%d.%m.%Y", id(sntp_time).now());
       } else {
-        // Liiketila
-        if (id(motion_sensor).state) {
-          it.print(0, 36, id(font_small), "LIIKE!");
-        } else {
-          it.print(0, 36, id(font_small), "Ei liiketta");
-        }
+        // Ei liikettä
+        it.print(0, 36, id(font_small), "Ei liiketta");
       }
 
 font:
