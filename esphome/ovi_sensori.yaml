@@ -16,8 +16,16 @@ globals:
     type: int
     restore_value: no
     initial_value: '-1'
+  - id: prev_sec_tens
+    type: int
+    restore_value: no
+    initial_value: '-1'
   - id: anim_start
     type: long
+    restore_value: no
+    initial_value: '0'
+  - id: anim_x
+    type: int
     restore_value: no
     initial_value: '0'
 
@@ -55,12 +63,9 @@ display:
     lambda: |-
       auto now = id(sntp_time).now();
 
-      // Minuutin vaihto käynnistää hypyn
+      // Minuutin tai sekuntien kymmenen vaihto käynnistää hypyn
       int cur_min = now.hour * 60 + now.minute;
-      if (id(prev_min) != -1 && id(prev_min) != cur_min) {
-        id(anim_start) = millis();
-      }
-      id(prev_min) = cur_min;
+      int cur_sec_tens = now.second / 10;
 
       // Kellonaika osat
       std::string hm = str_sprintf("%02d:%02d", now.hour, now.minute);
@@ -71,11 +76,27 @@ display:
       int min_x = it.get_text_width(id(font_large), hm.c_str());
       it.printf(min_x, 6, id(font_large), "%s", ss.c_str());
 
-      // Animaatio: hahmo hyppää minuuttinumeron kohdalle (~1s)
+      // Määritä hahmon kohde vaihtuvan numeron mukaan
+      int target_x = -1;
+      if (id(prev_min) != -1 && id(prev_min) != cur_min) {
+        // minutti vaihtui -> minuutin kohdalle (2 viimeistä merkkiä)
+        target_x = min_x - 18;
+      } else if (id(prev_sec_tens) != -1 && id(prev_sec_tens) != cur_sec_tens) {
+        // sekuntien kymmenen vaihtui -> kymmenennen kohdalle
+        target_x = min_x + 2;
+      }
+      id(prev_min) = cur_min;
+      id(prev_sec_tens) = cur_sec_tens;
+      if (target_x >= 0) {
+        id(anim_start) = millis();
+        id(anim_x) = target_x;
+      }
+
+      // Animaatio: hahmo hyppää vaihtuvan numeron kohdalle (~1s)
       float t = (millis() - id(anim_start)) / 1000.0f;
       if (t >= 0.0f && t < 1.0f) {
         float p = clamp(t, 0.0f, 1.0f);
-        int hx = min_x - 6;
+        int hx = id(anim_x);
         int hy = (int)(24 - 50.0f * p * (1.0f - p));
         it.filled_circle(hx, hy, 6);                // pää
         it.filled_rectangle(hx - 2, hy + 6, 4, 8);  // vartalo
