@@ -1,0 +1,99 @@
+substitutions:
+  name: "ovi-kello"
+  friendly_name: "Oven kello ja liikesensori"
+
+esphome:
+  name: ${name}
+  friendly_name: ${friendly_name}
+
+esp32:
+  board: esp32dev
+  framework:
+    type: esp-idf
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+captive_portal:
+
+logger:
+
+api:
+
+ota:
+
+time:
+  - platform: sntp
+    id: sntp_time
+    servers:
+      - murrikka.lan
+      - 1.fi.pool.ntp.org
+      - 2.fi.pool.ntp.org
+
+display:
+  - platform: ssd1306_i2c
+    model: "SSD1306 128x64"
+    id: oled_display
+    address: 0x3C
+    update_interval: 1s
+    lambda: |-
+      // Näytä kellonaika
+      it.strftime(0, 0, id(font_large), "%H:%M:%S", id(sntp_time).now());
+
+      // Näytä päivämäärä
+      it.strftime(0, 36, id(font_small), "%d.%m.%Y", id(sntp_time).now());
+
+      // Näytä liikesensorin tila
+      if (id(motion_sensor).state) {
+        it.print(0, 56, id(font_small), "LIIKE DETEKTOITU!");
+      } else {
+        it.print(0, 56, id(font_small), "Ei liikettä");
+      }
+
+font:
+  - file: "gfonts://Roboto"
+    id: font_large
+    size: 28
+
+  - file: "gfonts://Roboto"
+    id: font_small
+    size: 16
+
+i2c:
+  sda: GPIO21
+  scl: GPIO22
+  scan: true
+
+sensor:
+  - platform: wifi_signal
+    name: "${friendly_name} WiFi signaali"
+    update_interval: 60s
+
+binary_sensor:
+  - platform: gpio
+    name: "${friendly_name} Liikesensori"
+    pin:
+      number: GPIO4
+      mode: INPUT_PULLUP
+    device_class: motion
+    id: motion_sensor
+    filters:
+      - delayed_off: 5s
+    on_press:
+      then:
+        - component.update:
+            id: last_motion
+        - component.update:
+            id: oled_display
+
+text_sensor:
+  - platform: template
+    name: "${friendly_name} Viimeinen liike"
+    id: last_motion
+    lambda: |-
+      auto now = id(sntp_time).now();
+      char buf[20];
+      strftime(buf, sizeof(buf), "%H:%M:%S", now);
+      return std::string(buf);
+    update_interval: never
