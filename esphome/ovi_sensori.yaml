@@ -11,24 +11,6 @@ esp32:
   framework:
     type: esp-idf
 
-globals:
-  - id: prev_min
-    type: int
-    restore_value: no
-    initial_value: '-1'
-  - id: prev_sec_tens
-    type: int
-    restore_value: no
-    initial_value: '-1'
-  - id: anim_start
-    type: long
-    restore_value: no
-    initial_value: '0'
-  - id: anim_x
-    type: int
-    restore_value: no
-    initial_value: '0'
-
 wifi:
   ssid: !secret wifi_ssid
   password: !secret wifi_password
@@ -64,46 +46,8 @@ display:
     lambda: |-
       auto now = id(sntp_time).now();
 
-      // Minuutin tai sekuntien kymmenen vaihto käynnistää hypyn
-      int cur_min = now.hour * 60 + now.minute;
-      int cur_sec_tens = now.second / 10;
-
       // Piirrä koko kellonaika isolla
       it.strftime(0, 6, id(font_large), "%H:%M:%S", now);
-
-      // Kiinteät kohde-koordinaatit (mitattu Roboto 22 -fontille)
-      const int min_x = 27;   // minuuttinumeroiden alku (HH: + minuutti)
-      const int sec_x = 49;   // sekuntinumeroiden alku
-
-      // Määritä hahmon kohde vaihtuvan numeron mukaan
-      int target_x = -1;
-      if (id(prev_min) != -1 && id(prev_min) != cur_min) {
-        // minutti vaihtui -> minuutin kohdalle
-        target_x = min_x + 2;
-      } else if (id(prev_sec_tens) != -1 && id(prev_sec_tens) != cur_sec_tens) {
-        // sekuntien kymmenen vaihtui -> kymmenennen kohdalle
-        target_x = sec_x + 2;
-      }
-      id(prev_min) = cur_min;
-      id(prev_sec_tens) = cur_sec_tens;
-      if (target_x >= 0) {
-        id(anim_start) = millis();
-        id(anim_x) = target_x;
-      }
-
-      // Animaatio: hahmo hyppää vaihtuvan numeron kohdalle (~1s)
-      float t = (millis() - id(anim_start)) / 1000.0f;
-      if (t >= 0.0f && t < 1.0f) {
-        float p = clamp(t, 0.0f, 1.0f);
-        int hx = id(anim_x);
-        int hy = (int)(24 - 50.0f * p * (1.0f - p));
-        it.filled_circle(hx, hy, 6);                // pää
-        it.filled_rectangle(hx - 2, hy + 6, 4, 8);  // vartalo
-        it.filled_rectangle(hx - 5, hy + 14, 3, 4); // vasen jalka
-        it.filled_rectangle(hx + 2, hy + 14, 3, 4); // oikea jalka
-        it.filled_circle(hx - 2, hy - 1, 1);        // silmä
-        it.filled_circle(hx + 2, hy - 1, 1);        // silmä
-      }
 
       // Alarivi: päivämäärä lyhyessä muodossa (vain päivämäärä)
       it.strftime(0, 46, id(font_small), "%y/%m/%d", now);
@@ -119,12 +63,12 @@ display:
       it.line(114, 39, 100, 24);                  // käsi ylhäälle (vapa)
       it.line(100, 24, 104, 24);                  // vavan kärki
 
-      // Siima heiluu pienesti ja ulottuu näytön alalaitaan
-      float sway = sin(millis() / 300.0f) * 3.0f;
-      int line_bottom_x = 104 + (int)sway;
-      int line_bottom_y = 60;
-      it.line(104, 24, line_bottom_x, line_bottom_y);              // siima vavasta alalaitaan
-      it.line(line_bottom_x, line_bottom_y, line_bottom_x + (int)sway, line_bottom_y + 2);
+      // Siima suorana eteenpäin (vasemmalle) alalaitaan, pieni veto ylös-alas
+      float bob = sin(millis() / 300.0f) * 2.0f;
+      int line_bottom_x = 92;
+      int line_bottom_y = 60 + (int)(bob * 0.5f);
+      it.line(100, 24, line_bottom_x, line_bottom_y);
+      it.line(line_bottom_x, line_bottom_y, line_bottom_x, line_bottom_y + 2);
 
 font:
   - file: "gfonts://Roboto"
