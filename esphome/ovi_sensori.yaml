@@ -42,7 +42,7 @@ display:
     model: "SSD1306 128x64"
     id: oled_display
     address: 0x3C
-    update_interval: 1s
+    update_interval: 100ms
     lambda: |-
       auto now = id(sntp_time).now();
 
@@ -52,35 +52,27 @@ display:
       // Alarivi: päivämäärä lyhyessä muodossa (vain päivämäärä)
       it.strftime(0, 46, id(font_small), "%y/%m/%d", now);
 
-      // Kalastaja: istuu taaksepäin nojaten, profiili vasemmalle (ei kasvonpiirteitä)
-      it.filled_circle(117, 31, 6);               // pieni pyöreä pää
-      it.filled_rectangle(119, 24, 8, 4);         // hiustyyli (kallistuu)
-      it.filled_circle(122, 27, 3);               // hiustupsu
-      it.filled_triangle(118, 35, 106, 46, 124, 44);   // torso nojaa taaksepäin
-      it.filled_rectangle(122, 40, 6, 8);         // selkä/takavartalo
-      it.line(108, 40, 103, 30);                  // käsi ojennettu ylös-eteen (pitää siimaa)
-      it.line(112, 40, 104, 44);                  // toinen käsi vartalon edessä
-      it.line(106, 46, 96, 40);                   // koukussa oleva jalka (polvi ylös)
-      it.line(96, 40, 88, 46);                    // koukun sääri
-      it.line(118, 46, 124, 46);                  // suora jalka eteenpäin
-      it.line(124, 46, 124, 52);                  // suoran jalan alku
-      it.filled_rectangle(86, 45, 6, 3);          // jalkaterä (koukkujalka)
-      it.filled_rectangle(120, 51, 9, 3);         // jalkaterä (suora jalka)
+      // Tornado animaatio (vaakasuuntainen heilahdus ja pyörteily)
+      float tw = sin(millis() / 180.0f);
+      int cx = 102 + (int)(tw * 6.0f);
 
-      // Siima: suuri kaari oikealle hahmon ympärille (ei mene kellon/päivän päälle)
-      const int hand_x = 103, hand_y = 30;
-      it.line(hand_x, hand_y, 110, 21);
-      it.line(110, 21, 119, 13);
-      it.line(119, 13, 126, 7);
-      it.line(126, 7, 121, 17);
-      it.line(121, 17, 116, 29);
-      it.line(116, 29, 112, 41);
-      it.line(112, 41, 109, 50);
-      it.line(109, 50, 107, 56);                   // siima maahan
-      it.filled_circle(107, 57, 2);                // kiinnityspiste maassa
-      it.line(102, 54, 98, 57);                    // värähtelyviivat maassa
-      it.line(95, 60, 91, 62);
-      it.line(112, 61, 109, 63);
+      // Suppilon leveä suu / pilvi (ylhäällä)
+      it.filled_rectangle(cx - 14, 8, 28, 4);
+      it.filled_rectangle(cx - 11, 12, 22, 3);
+
+      // Suppilo: pinottuja katkonaisia vaakaviivoja jotka kapenevat vyötäröön
+      for (int i = 0; i < 9; i++) {
+        int y = 15 + i * 3;
+        int w = 10 - i;
+        int sway = (int)(tw * (2 + i * 0.8f));
+        it.line(cx - w + sway, y, cx + w + sway, y + 2);
+      }
+
+      // Tornadon alareuna pölyä (leveäntyvä, nostaa maassa)
+      it.filled_rectangle(cx - 9, 44, 18, 3);
+      it.filled_rectangle(cx - 11, 47, 22, 3);
+      it.filled_rectangle(cx - 13, 50, 26, 3);
+      it.filled_rectangle(cx - 13, 53, 26, 2);
 
 font:
   - file: "gfonts://Montserrat"
