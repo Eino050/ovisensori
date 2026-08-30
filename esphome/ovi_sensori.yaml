@@ -52,43 +52,30 @@ display:
       // Alarivi: päivämäärä lyhyessä muodossa (vain päivämäärä)
       it.strftime(0, 46, id(font_small), "%y/%m/%d", now);
 
-      // Matrix-sade: kiinalaisia merkkejä putoilee jononä jonoina (3-6 merkkiä)
-      static const char *han[] = {"你", "好", "世", "界", "龙", "天", "风",
-                                  "水", "雨", "火", "金", "木", "土", "日",
-                                  "月", "星", "文", "海"};
-      for (int i = 0; i < 5; i++) {
-        int x = 82 + i * 9;
-        int speed = 90 + (i * 23) % 60;                 // eri putoamisnopeudet
-        int chainLen = 3 + ((i + (millis() / 1000)) % 4);   // 3-6 merkkiä
-        long base = (millis() / speed + i * 53) % 60;
-        for (int k = 0; k < chainLen; k++) {
-          int y = 2 + (int)(base + k * 7) % 40;
-          int size = (i + k) % 3;                       // 0=pieni, 1=keski, 2=iso
-          int idx = (millis() / 120 + i * 11 + k * 17) % 18;
-          const char *c = han[idx];
-          switch (size) {
-            case 0: it.printf(x, y, id(font_tiny), "%s", c); break;
-            case 1: it.printf(x, y, id(font_small), "%s", c); break;
-            case 2: it.printf(x, y, id(font_large), "%s", c); break;
-          }
-        }
+      // Pilvi ylhäällä (oikealla), josta satavat nopeat sadepisarat
+      it.filled_rectangle(80, 4, 44, 6);
+      it.filled_rectangle(86, 2, 34, 4);
+      it.filled_circle(83, 8, 3);
+      it.filled_circle(122, 8, 3);
+
+      // Nopeat sadepisarat putoavat pilvestä
+      for (int i = 0; i < 12; i++) {
+        int x = 84 + (i * 29) % 36;
+        int speed = 30 + (i * 13) % 25;         // eri putoamisnopeudet
+        long pos = (millis() / speed + i * 17) % 42;
+        int y = 12 + (int)pos;
+        int len = (i % 3) + 1;                   // pisaran pituus 1-3px
+        it.line(x, y, x, y + len);
       }
 
 font:
-  - file: "gfonts://Noto Sans SC"
+  - file: "gfonts://Montserrat"
     id: font_large
     size: 20
-    glyphs: "0123456789:/你好世界龙天风雨水火金木土日月星文海"
 
-  - file: "gfonts://Noto Sans SC"
+  - file: "gfonts://Montserrat"
     id: font_small
     size: 14
-    glyphs: "0123456789:/你好世界龙天风雨水火金木土日月星文海"
-
-  - file: "gfonts://Noto Sans SC"
-    id: font_tiny
-    size: 10
-    glyphs: "0123456789:/你好世界龙天风雨水火金木土日月星文海"
 
 i2c:
   sda: GPIO21
