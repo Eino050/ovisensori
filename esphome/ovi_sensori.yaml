@@ -28,22 +28,6 @@ globals:
     type: int
     restore_value: no
     initial_value: '0'
-  - id: next_fish
-    type: long
-    restore_value: no
-    initial_value: '3000'
-  - id: fish_state
-    type: int
-    restore_value: no
-    initial_value: '0'
-  - id: heitto_start
-    type: long
-    restore_value: no
-    initial_value: '0'
-  - id: cast_start
-    type: long
-    restore_value: no
-    initial_value: '0'
 
 wifi:
   ssid: !secret wifi_ssid
@@ -133,47 +117,12 @@ display:
       it.line(114, 39, 100, 24);                  // käsi ylhäälle (vapa)
       it.line(100, 24, 104, 24);                  // vavan kärki
 
-      // Kalan tilasiirtymät
-      if (id(fish_state) == 0 && millis() > id(next_fish)) {
-        // kala tulee siimaan
-        id(fish_state) = 1;
-        id(heitto_start) = millis() + 2500;
-      } else if (id(fish_state) == 1 && millis() > id(heitto_start)) {
-        // heitto alkaa
-        id(fish_state) = 2;
-        id(cast_start) = millis();
-      } else if (id(fish_state) == 2 && millis() - id(cast_start) > 1200) {
-        // heitto päättyy -> uusi kala random 10-60s päästä
-        id(fish_state) = 0;
-        id(next_fish) = millis() + 10000 + (random() % 50000);
-      }
-
       // Siima heiluu pienesti ja ulottuu näytön alalaitaan
       float sway = sin(millis() / 300.0f) * 3.0f;
       int line_bottom_x = 104 + (int)sway;
       int line_bottom_y = 60;
-      it.line(104, 24, line_bottom_x, line_bottom_y);   // siima vavasta alalaitaan
-
-      if (id(fish_state) == 0) {
-        // ei kalaa: siiman kärki roikkuu alalaidassa
-        it.line(line_bottom_x, line_bottom_y, line_bottom_x + (int)sway, line_bottom_y + 2);
-      } else if (id(fish_state) == 1) {
-        // kala riippuu siiman päässä alalaidassa
-        it.line(line_bottom_x, line_bottom_y, line_bottom_x, line_bottom_y + 5);
-        int fx = line_bottom_x;
-        int fy = line_bottom_y + 5;
-        it.filled_triangle(fx, fy, fx - 4, fy - 3, fx + 4, fy - 3); // kalan pyrstö
-        it.filled_circle(fx, fy, 2);                                // kalan pää
-      } else if (id(fish_state) == 2) {
-        // heitto: kala lentää parabolisena taakse (vasemmalle/ylös)
-        float cp = clamp((millis() - id(cast_start)) / 1200.0f, 0.0f, 1.0f);
-        float fly_x = line_bottom_x - 70.0f * cp;
-        float fly_y = line_bottom_y - 30.0f * (cp - 0.2f);
-        int fx = (int)fly_x;
-        int fy = (int)(fly_y - 40.0f * cp * (1.0f - cp));
-        it.filled_triangle(fx, fy, fx - 4, fy - 3, fx + 4, fy - 3);
-        it.filled_circle(fx, fy, 2);
-      }
+      it.line(104, 24, line_bottom_x, line_bottom_y);              // siima vavasta alalaitaan
+      it.line(line_bottom_x, line_bottom_y, line_bottom_x + (int)sway, line_bottom_y + 2);
 
 font:
   - file: "gfonts://Roboto"
