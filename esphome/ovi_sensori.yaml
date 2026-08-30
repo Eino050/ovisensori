@@ -23,7 +23,7 @@ globals:
   - id: prev_min_str
     type: std::string
     restore_value: no
-    initial_value: '..'
+    initial_value: '""'
 
 wifi:
   ssid: !secret wifi_ssid
@@ -112,12 +112,25 @@ display:
         it.filled_circle(hx + 2, hy - 1, 1);
       }
 
-      // Alarivi: päivämäärä (vaihtuu 5s välein sekunteihin)
-      if ((millis() / 5000) % 2 == 0) {
-        it.strftime(0, 46, id(font_small), "%d.%m.%Y", id(sntp_time).now());
+      // Alarivi: päivämäärä lyhyessä muodossa ja viiva alla
+      int px = (millis() / 5000) % 2;
+      if (px == 0) {
+        it.strftime(0, 46, id(font_small), "%y/%m/%d", id(sntp_time).now());
       } else {
         it.strftime(0, 46, id(font_small), "%H:%M:%S", id(sntp_time).now());
       }
+      it.filled_rectangle(0, 56, 128, 8);
+
+      // Kalastava hahmo joka nojaa näytön oikeaan reunaan
+      // vartalo (nojaa oikealle)
+      it.filled_circle(116, 30, 5);              // pää
+      it.filled_rectangle(112, 35, 3, 10);        // vartalo
+      it.line(115, 35, 100, 20);                 // käsi ylhäälle (vapa)
+      it.line(100, 20, 104, 20);                 // vavan kärki
+      it.line(97, 22, 60, 40);                   // siima kohti päivämäärää
+      // jalat nojaamassa reunaan
+      it.line(113, 45, 108, 52);
+      it.line(116, 45, 121, 52);
 
 font:
   - file: "gfonts://Roboto"
