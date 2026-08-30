@@ -88,8 +88,8 @@ display:
       it.strftime(0, 6, id(font_large), "%H:%M:%S", now);
 
       // Kiinteät kohde-koordinaatit (mitattu Roboto 22 -fontille)
-      const int min_x = 26;   // minuuttinumeroiden alku (HH: + minuutti)
-      const int sec_x = 46;   // sekuntinumeroiden alku
+      const int min_x = 27;   // minuuttinumeroiden alku (HH: + minuutti)
+      const int sec_x = 49;   // sekuntinumeroiden alku
 
       // Määritä hahmon kohde vaihtuvan numeron mukaan
       int target_x = -1;
@@ -121,12 +121,8 @@ display:
         it.filled_circle(hx + 2, hy - 1, 1);        // silmä
       }
 
-      // Alarivi: päivämäärä lyhyessä muodossa
-      if ((millis() / 5000) % 2 == 0) {
-        it.strftime(0, 46, id(font_small), "%y/%m/%d", now);
-      } else {
-        it.strftime(0, 46, id(font_small), "%H:%M:%S", now);
-      }
+      // Alarivi: päivämäärä lyhyessä muodossa (vain päivämäärä)
+      it.strftime(0, 46, id(font_small), "%y/%m/%d", now);
 
       // Kalastava hahmo joka istuu näytön oikeassa reunassa
       it.filled_circle(116, 34, 5);               // pää
@@ -152,20 +148,20 @@ display:
         id(next_fish) = millis() + 10000 + (random() % 50000);
       }
 
-      // Siima heiluu pienesti
+      // Siima heiluu pienesti ja ulottuu näytön alalaitaan
       float sway = sin(millis() / 300.0f) * 3.0f;
-      int line_bottom_x = 97 + (int)sway;
-      int line_bottom_y = 26 + (int)(sway * 0.5f);
-      it.line(104, 24, line_bottom_x, line_bottom_y);   // siima vavasta alas
+      int line_bottom_x = 104 + (int)sway;
+      int line_bottom_y = 60;
+      it.line(104, 24, line_bottom_x, line_bottom_y);   // siima vavasta alalaitaan
 
       if (id(fish_state) == 0) {
-        // ei kalaa: siiman kärki roikkuu
-        it.line(line_bottom_x, line_bottom_y, line_bottom_x, line_bottom_y + 6);
+        // ei kalaa: siiman kärki roikkuu alalaidassa
+        it.line(line_bottom_x, line_bottom_y, line_bottom_x + (int)sway, line_bottom_y + 2);
       } else if (id(fish_state) == 1) {
-        // kala riippuu siiman päässä
-        it.line(line_bottom_x, line_bottom_y, line_bottom_x, line_bottom_y + 8);
+        // kala riippuu siiman päässä alalaidassa
+        it.line(line_bottom_x, line_bottom_y, line_bottom_x, line_bottom_y + 5);
         int fx = line_bottom_x;
-        int fy = line_bottom_y + 8;
+        int fy = line_bottom_y + 5;
         it.filled_triangle(fx, fy, fx - 4, fy - 3, fx + 4, fy - 3); // kalan pyrstö
         it.filled_circle(fx, fy, 2);                                // kalan pää
       } else if (id(fish_state) == 2) {
