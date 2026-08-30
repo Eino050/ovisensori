@@ -84,23 +84,21 @@ display:
       int cur_min = now.hour * 60 + now.minute;
       int cur_sec_tens = now.second / 10;
 
-      // Kellonaika osat
-      std::string hm = str_sprintf("%02d:%02d", now.hour, now.minute);
-      std::string ss = str_sprintf("%02d", now.second);
+      // Piirrä koko kellonaika isolla
+      it.strftime(0, 6, id(font_large), "%H:%M:%S", now);
 
-      // Piirrä tunnit + minuutit isolla
-      it.printf(0, 6, id(font_large), "%s", hm.c_str());
-      int min_x = it.get_string_width(id(font_large), hm.c_str());
-      it.printf(min_x, 6, id(font_large), "%s", ss.c_str());
+      // Kiinteät kohde-koordinaatit (mitattu Roboto 22 -fontille)
+      const int min_x = 26;   // minuuttinumeroiden alku (HH: + minuutti)
+      const int sec_x = 46;   // sekuntinumeroiden alku
 
       // Määritä hahmon kohde vaihtuvan numeron mukaan
       int target_x = -1;
       if (id(prev_min) != -1 && id(prev_min) != cur_min) {
-        // minutti vaihtui -> minuutin kohdalle (2 viimeistä merkkiä)
-        target_x = min_x - 18;
+        // minutti vaihtui -> minuutin kohdalle
+        target_x = min_x + 2;
       } else if (id(prev_sec_tens) != -1 && id(prev_sec_tens) != cur_sec_tens) {
         // sekuntien kymmenen vaihtui -> kymmenennen kohdalle
-        target_x = min_x + 2;
+        target_x = sec_x + 2;
       }
       id(prev_min) = cur_min;
       id(prev_sec_tens) = cur_sec_tens;
