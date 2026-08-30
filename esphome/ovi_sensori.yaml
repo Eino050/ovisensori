@@ -36,9 +36,11 @@ logger:
 api:
 
 ota:
+  port: 3232
+  password: !secret ota_password
 
 web_server:
-  port: 80
+  port: 8080
 
 time:
   - platform: sntp
