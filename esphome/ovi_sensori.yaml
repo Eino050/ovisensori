@@ -41,14 +41,17 @@ display:
       // Näytä kellonaika
       it.strftime(0, 0, id(font_large), "%H:%M:%S", id(sntp_time).now());
 
-      // Näytä päivämäärä
-      it.strftime(0, 36, id(font_small), "%d.%m.%Y", id(sntp_time).now());
-
-      // Näytä liikesensorin tila
-      if (id(motion_sensor).state) {
-        it.print(0, 56, id(font_small), "LIIKE DETEKTOITU!");
+      // Alin rivi: vaihtuu 5s välein päivämäärän ja liiketilan välillä
+      if ((millis() / 5000) % 2 == 0) {
+        // Päivämäärä
+        it.strftime(0, 36, id(font_small), "%d.%m.%Y", id(sntp_time).now());
       } else {
-        it.print(0, 56, id(font_small), "Ei liikettä");
+        // Liiketila
+        if (id(motion_sensor).state) {
+          it.print(0, 36, id(font_small), "LIIKE!");
+        } else {
+          it.print(0, 36, id(font_small), "Ei liiketta");
+        }
       }
 
 font:
