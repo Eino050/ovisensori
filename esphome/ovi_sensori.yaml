@@ -21,6 +21,8 @@ logger:
 
 api:
 
+homeassistant:
+
 ota:
   platform: esphome
   port: 3232
@@ -52,32 +54,61 @@ display:
       // Alarivi: päivämäärä lyhyessä muodossa (vain päivämäärä)
       it.strftime(0, 46, id(font_small), "%y/%m/%d", now);
 
-      // Aurinko, jonka takaa hattarapilvi
-      int cx = 105, cy = 9, r = 9;
-      it.filled_circle(cx, cy, r);
-      for (int a = 0; a < 8; a++) {
-        float ang = a * 3.14159f / 4.0f;
-        int x1 = cx + (int)(cos(ang) * (r + 2)), y1 = cy + (int)(sin(ang) * (r + 2));
-        int x2 = cx + (int)(cos(ang) * (r + 5)), y2 = cy + (int)(sin(ang) * (r + 5));
-        it.line(x1, y1, x2, y2);
-      }
+      // Säätila Home Assistantilta (weather.home): clear, partlycloudy, cloudy, rainy, ...
+      std::string w = id(weather_state).state;
+      bool rain = w.find("rain") != std::string::npos || w.find("snow") != std::string::npos;
+      bool partly = w.find("partly") != std::string::npos;
+      bool clear = w == "clear" || w.find("sun") != std::string::npos;
+      bool cloud = w.find("cloud") != std::string::npos || w.find("fog") != std::string::npos;
 
-      // Hattarapilvi (päällekkäiset pyöreät kuplat) peittää auringon keskustan
-      it.filled_circle(84, 11, 7);
-      it.filled_circle(93, 7, 9);
-      it.filled_circle(103, 5, 10);
-      it.filled_circle(113, 6, 9);
-      it.filled_circle(122, 10, 7);
-      it.filled_rectangle(80, 12, 47, 8);
+      auto draw_sun = [&](int cx, int cy, int r) {
+        it.filled_circle(cx, cy, r);
+        for (int a = 0; a < 8; a++) {
+          float ang = a * 3.14159f / 4.0f;
+          int x1 = cx + (int)(cos(ang) * (r + 2)), y1 = cy + (int)(sin(ang) * (r + 2));
+          int x2 = cx + (int)(cos(ang) * (r + 5)), y2 = cy + (int)(sin(ang) * (r + 5));
+          it.line(x1, y1, x2, y2);
+        }
+      };
+      auto draw_sadepilvi = [&]() {
+        it.filled_rectangle(80, 4, 44, 6);
+        it.filled_rectangle(86, 2, 34, 4);
+        it.filled_circle(83, 8, 3);
+        it.filled_circle(122, 8, 3);
+      };
+      auto draw_hattarapilvi = [&]() {
+        it.filled_circle(84, 11, 7);
+        it.filled_circle(93, 7, 9);
+        it.filled_circle(103, 5, 10);
+        it.filled_circle(113, 6, 9);
+        it.filled_circle(122, 10, 7);
+        it.filled_rectangle(80, 12, 47, 8);
+      };
 
-      // Sadepisarat putoavat pilvestä
-      for (int i = 0; i < 30; i++) {
-        int x = 82 + (i * 23) % 42;
-        int speed = 6 + (i * 5) % 9;                 // nopea putoaminen
-        long pos = (millis() / speed + i * 23) % 48;
-        int y = 20 + (int)pos;
-        int len = (i % 4) + 1;                        // pisaran pituus 1-4px
-        it.line(x, y, x, y + len);
+      if (rain) {
+        // Sadepilvi + säde
+        draw_sadepilvi();
+        for (int i = 0; i < 30; i++) {
+          int x = 82 + (i * 23) % 42;
+          int speed = 6 + (i * 5) % 9;
+          long pos = (millis() / speed + i * 23) % 48;
+          int y = 20 + (int)pos;
+          int len = (i % 4) + 1;
+          it.line(x, y, x, y + len);
+        }
+      } else if (clear) {
+        // Pelkkä aurinko
+        draw_sun(105, 10, 9);
+      } else if (partly) {
+        // Hattarapilvi, jonka takaa paistaa aurinko
+        draw_sun(105, 9, 9);
+        draw_hattarapilvi();
+      } else if (cloud) {
+        // Pilvinen: hattarapilvi ilman aurinkoa
+        draw_hattarapilvi();
+      } else {
+        // Oletus: hattarapilvi
+        draw_hattarapilvi();
       }
 
 font:
@@ -93,6 +124,11 @@ i2c:
   sda: GPIO21
   scl: GPIO22
   scan: true
+
+text_sensor:
+  - platform: homeassistant
+    id: weather_state
+    entity_id: weather.home
 
 sensor:
   - platform: wifi_signal
