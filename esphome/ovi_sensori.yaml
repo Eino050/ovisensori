@@ -29,6 +29,9 @@ api:
 
 ota:
 
+web_server:
+  port: 80
+
 time:
   - platform: sntp
     id: sntp_time
