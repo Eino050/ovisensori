@@ -1,6 +1,6 @@
 substitutions:
   name: "ovi-kello"
-  friendly_name: "Oven kello ja liikesensori"
+  friendly_name: "Oven kello"
 
 esphome:
   name: ${name}
@@ -12,10 +12,6 @@ esp32:
     type: esp-idf
 
 globals:
-  - id: last_motion_ms
-    type: long
-    restore_value: no
-    initial_value: '0'
   - id: last_min
     type: int
     restore_value: no
@@ -116,18 +112,11 @@ display:
         it.filled_circle(hx + 2, hy - 1, 1);
       }
 
-      // Alarivi: liike + päivämäärä (5s välein)
-      auto &last = id(last_motion_ms);
-      if (id(motion_sensor).state) {
-        last = millis();
-      }
-      if (millis() - last < 5000) {
-        it.printf(0, 46, id(font_small), "LIIKE!!");
-        it.filled_rectangle(0, 56, 128, 8);
-      } else if ((millis() / 5000) % 2 == 0) {
+      // Alarivi: päivämäärä (vaihtuu 5s välein sekunteihin)
+      if ((millis() / 5000) % 2 == 0) {
         it.strftime(0, 46, id(font_small), "%d.%m.%Y", id(sntp_time).now());
       } else {
-        it.print(0, 46, id(font_small), "Ei liiketta");
+        it.strftime(0, 46, id(font_small), "%H:%M:%S", id(sntp_time).now());
       }
 
 font:
@@ -148,30 +137,3 @@ sensor:
   - platform: wifi_signal
     name: "${friendly_name} WiFi signaali"
     update_interval: 60s
-
-binary_sensor:
-  - platform: gpio
-    name: "${friendly_name} Liikesensori"
-    pin:
-      number: GPIO4
-      mode: INPUT_PULLUP
-    device_class: motion
-    id: motion_sensor
-    filters:
-      - delayed_on: 3s
-      - delayed_off: 5s
-    on_press:
-      then:
-        - component.update:
-            id: last_motion
-        - component.update:
-            id: oled_display
-
-text_sensor:
-  - platform: template
-    name: "${friendly_name} Viimeinen liike"
-    id: last_motion
-    lambda: |-
-      auto now = id(sntp_time).now();
-      return now.strftime("%H:%M:%S");
-    update_interval: never
