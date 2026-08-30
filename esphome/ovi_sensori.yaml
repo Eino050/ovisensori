@@ -93,7 +93,5 @@ text_sensor:
     id: last_motion
     lambda: |-
       auto now = id(sntp_time).now();
-      char buf[20];
-      strftime(buf, sizeof(buf), "%H:%M:%S", now);
-      return std::string(buf);
+      return now.strftime("%H:%M:%S");
     update_interval: never
