@@ -52,32 +52,38 @@ display:
       // Alarivi: päivämäärä lyhyessä muodossa (vain päivämäärä)
       it.strftime(0, 46, id(font_small), "%y/%m/%d", now);
 
-      // Matrix-sade: erikokoisia merkkejä putoilee oikealle alueelle
-      const char matrix_chars[] = "01AЮЖ$#*+?<>W@";
+      // Matrix-sade: kiinalaisia merkkejä putoilee jononä jonoina (3-6 merkkiä)
+      static const char *han[] = {"你", "好", "世", "界", "龙", "天", "风",
+                                  "水", "雨", "火", "金", "木", "土", "日",
+                                  "月", "星", "文", "海"};
       for (int i = 0; i < 5; i++) {
-        int x = 84 + i * 9;
-        int speed = 60 + (i * 23) % 70;         // eri putoamisnopeudet
-        long pos = (millis() / speed + (i * 37)) % 34;
-        int y = 4 + (int)pos;
-        int size = i % 3;                        // 0=pieni, 1=keski, 2=iso
-        char c = matrix_chars[((millis() / 130 + i * 7) % 13)];
-        switch (size) {
-          case 0: it.printf(x, y, id(font_tiny), "%c", c); break;
-          case 1: it.printf(x, y, id(font_small), "%c", c); break;
-          case 2: it.printf(x, y, id(font_large), "%c", c); break;
+        int x = 82 + i * 9;
+        int speed = 90 + (i * 23) % 60;                 // eri putoamisnopeudet
+        int chainLen = 3 + ((i + (millis() / 1000)) % 4);   // 3-6 merkkiä
+        long base = (millis() / speed + i * 53) % 60;
+        for (int k = 0; k < chainLen; k++) {
+          int y = 2 + (int)(base + k * 7) % 40;
+          int size = (i + k) % 3;                       // 0=pieni, 1=keski, 2=iso
+          int idx = (millis() / 120 + i * 11 + k * 17) % 18;
+          const char *c = han[idx];
+          switch (size) {
+            case 0: it.printf(x, y, id(font_tiny), "%s", c); break;
+            case 1: it.printf(x, y, id(font_small), "%s", c); break;
+            case 2: it.printf(x, y, id(font_large), "%s", c); break;
+          }
         }
       }
 
 font:
-  - file: "gfonts://Montserrat"
+  - file: "gfonts://Noto Sans SC"
     id: font_large
     size: 20
 
-  - file: "gfonts://Montserrat"
+  - file: "gfonts://Noto Sans SC"
     id: font_small
     size: 14
 
-  - file: "gfonts://Montserrat"
+  - file: "gfonts://Noto Sans SC"
     id: font_tiny
     size: 10
 
