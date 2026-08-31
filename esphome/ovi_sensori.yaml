@@ -46,11 +46,15 @@ display:
     lambda: |-
       auto now = id(sntp_time).now();
 
-      // Päivämäärä ylhäällä
-      it.strftime(0, 6, id(font_small), "%y/%m/%d", now);
+      // Kello ylhäällä isolla
+      it.strftime(0, 0, id(font_large), "%H:%M:%S", now);
 
-      // Kello alempana pienemmällä fontilla
-      it.strftime(0, 24, id(font_small), "%H:%M:%S", now);
+      // Millisekunnit pienellä kellon alla
+      long ms = millis() % 1000;
+      it.printf(0, 22, id(font_small), "%03d ms", ms);
+
+      // Päivämäärä sen alla
+      it.strftime(0, 38, id(font_small), "%y/%m/%d", now);
 
       // Säätila Home Assistantilta (weather.home): clear, partlycloudy, cloudy, rainy, ...
       std::string w = id(weather_state).state;
@@ -110,7 +114,7 @@ display:
 
       // Lämpötila oikeassa alakulmassa (Home Assistant)
       float t = id(weather_temp).state;
-      if (!std::isnan(t)) it.printf(88, 49, id(font_small), "%.0f°C", t);
+      if (!std::isnan(t)) it.printf(88, 50, id(font_small), "%.0f°C", t);
 
 font:
   - file: "gfonts://Montserrat"
