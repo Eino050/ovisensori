@@ -50,9 +50,9 @@ display:
       it.strftime(0, 0, id(font_large), "%H:%M:%S", now);
 
       // Viikonpäivä suomeksi
-      static const char *days[] = {"Maanantai", "Tiistai", "Keskiviikko",
-                                   "Torstai", "Perjantai", "Lauantai", "Sunnuntai"};
-      int dow = now.day_of_week;   // 1=Maanantai ... 7=Sunnuntai
+      static const char *days[] = {"Sunnuntai", "Maanantai", "Tiistai",
+                                   "Keskiviikko", "Torstai", "Perjantai", "Lauantai"};
+      int dow = now.day_of_week;   // 1=Sunnuntai ... 7=Lauantai
       it.printf(0, 22, id(font_small), "%s", days[(dow - 1 + 7) % 7]);
 
       // Päivämäärä sen alla
