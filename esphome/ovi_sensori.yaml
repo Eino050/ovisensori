@@ -49,8 +49,8 @@ display:
       // Kello ylhäällä isolla
       it.strftime(0, 0, id(font_large), "%H:%M:%S", now);
 
-      // Soft by Eino
-      it.print(0, 22, id(font_small), "soft: by Eino");
+      // EVERY END
+      it.print(0, 22, id(font_small), "EVERY END");
 
       // Päivämäärä sen alla
       it.strftime(0, 38, id(font_small), "%y/%m/%d", now);
