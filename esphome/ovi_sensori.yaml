@@ -69,17 +69,17 @@ display:
         }
       };
       auto draw_sadepilvi = [&]() {
-        it.filled_rectangle(92, 5, 34, 5);
-        it.filled_rectangle(97, 3, 26, 3);
-        it.filled_circle(93, 9, 3);
-        it.filled_circle(124, 9, 3);
+        it.filled_rectangle(92, 8, 34, 5);
+        it.filled_rectangle(97, 6, 26, 3);
+        it.filled_circle(93, 12, 3);
+        it.filled_circle(124, 12, 3);
       };
       auto draw_hattarapilvi = [&]() {
-        it.filled_circle(99, 9, 6);
-        it.filled_circle(107, 6, 7);
-        it.filled_circle(115, 6, 8);
-        it.filled_circle(121, 9, 6);
-        it.filled_rectangle(94, 11, 30, 6);
+        it.filled_circle(99, 12, 6);
+        it.filled_circle(107, 9, 7);
+        it.filled_circle(115, 9, 8);
+        it.filled_circle(121, 12, 6);
+        it.filled_rectangle(94, 14, 30, 6);
       };
 
       if (rain) {
@@ -88,17 +88,17 @@ display:
         for (int i = 0; i < 26; i++) {
           int x = 96 + (i * 20) % 30;
           int speed = 6 + (i * 5) % 9;
-          long pos = (millis() / speed + i * 20) % 34;
-          int y = 13 + (int)pos;
+          long pos = (millis() / speed + i * 20) % 31;
+          int y = 17 + (int)pos;
           int len = (i % 4) + 1;
           it.line(x, y, x, y + len);
         }
       } else if (clear) {
         // Pelkkä aurinko
-        draw_sun(112, 10, 5);
+        draw_sun(112, 13, 5);
       } else if (partly) {
         // Hattarapilvi, jonka takaa paistaa aurinko
-        draw_sun(110, 11, 5);
+        draw_sun(110, 14, 5);
         draw_hattarapilvi();
       } else if (cloud) {
         // Pilvinen: hattarapilvi ilman aurinkoa
