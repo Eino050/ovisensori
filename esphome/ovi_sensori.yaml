@@ -49,9 +49,8 @@ display:
       // Kello ylhäällä isolla
       it.strftime(0, 0, id(font_large), "%H:%M:%S", now);
 
-      // Millisekunnit pienellä kellon alla
-      long ms = millis() % 1000;
-      it.printf(0, 22, id(font_small), "%03d ms", ms);
+      // Soft by Eino
+      it.print(0, 22, id(font_small), "soft: by Eino");
 
       // Päivämäärä sen alla
       it.strftime(0, 38, id(font_small), "%y/%m/%d", now);
