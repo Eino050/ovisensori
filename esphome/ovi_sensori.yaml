@@ -46,11 +46,11 @@ display:
     lambda: |-
       auto now = id(sntp_time).now();
 
-      // Piirrä koko kellonaika isolla
-      it.strftime(0, 6, id(font_large), "%H:%M:%S", now);
+      // Päivämäärä ylhäällä
+      it.strftime(0, 6, id(font_small), "%y/%m/%d", now);
 
-      // Alarivi: päivämäärä lyhyessä muodossa (vain päivämäärä)
-      it.strftime(0, 46, id(font_small), "%y/%m/%d", now);
+      // Kello alempana pienemmällä fontilla
+      it.strftime(0, 24, id(font_small), "%H:%M:%S", now);
 
       // Säätila Home Assistantilta (weather.home): clear, partlycloudy, cloudy, rainy, ...
       std::string w = id(weather_state).state;
