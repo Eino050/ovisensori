@@ -140,8 +140,7 @@ text_sensor:
 sensor:
   - platform: homeassistant
     id: weather_temp
-    entity_id: weather.home
-    attribute: temperature
+    entity_id: sensor.ulkona_temperature_2
   - platform: wifi_signal
     name: "${friendly_name} WiFi signaali"
     update_interval: 60s
